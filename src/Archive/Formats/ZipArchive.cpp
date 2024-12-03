@@ -48,7 +48,7 @@ using namespace slade;
 // Variables
 //
 // -----------------------------------------------------------------------------
-CVAR(Bool, zip_allow_duplicate_names, false, CVar::Save)
+CVAR(Bool, zip_allow_duplicate_names, true, CVar::Save)
 
 
 // -----------------------------------------------------------------------------
