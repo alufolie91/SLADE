@@ -546,34 +546,6 @@ void ArchiveDir::ensureUniqueName(ArchiveEntry* entry) const
 }
 
 // -----------------------------------------------------------------------------
-// Returns the first entry in the directory that has the same name as another,
-// or nullptr if all names are unique
-// -----------------------------------------------------------------------------
-ArchiveEntry* ArchiveDir::findDuplicateEntryName() const
-{
-	unsigned   i1        = 0;
-	const auto n_entries = entries_.size();
-	while (i1 < n_entries)
-	{
-		const auto& name = entries_[i1]->name();
-
-		unsigned i2 = i1 + 1;
-		while (i2 < n_entries)
-		{
-			if (strutil::equalCI(name, entries_[i2]->name()))
-				return entries_[i1].get();
-
-			++i2;
-		}
-
-		++i1;
-	}
-
-	return nullptr;
-}
-
-
-// -----------------------------------------------------------------------------
 //
 // ArchiveDir Class Static Functions
 //

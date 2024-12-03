@@ -56,7 +56,6 @@ public:
 	shared_ptr<ArchiveDir> clone(shared_ptr<ArchiveDir> parent = nullptr);
 	bool                   exportTo(string_view path) const;
 	void                   allowDuplicateNames(bool allow) { allow_duplicate_names_ = allow; }
-	ArchiveEntry*          findDuplicateEntryName() const;
 
 	// Static utility functions
 	static shared_ptr<ArchiveDir>   subdirAtPath(const shared_ptr<ArchiveDir>& root, string_view path);
