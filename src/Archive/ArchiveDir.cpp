@@ -530,7 +530,8 @@ void ArchiveDir::ensureUniqueName(ArchiveEntry* entry) const
 			continue;
 		}
 
-		if (strutil::equalCI(entries_[index]->name(), name))
+		//if (strutil::equalCI(entries_[index]->name(), name))
+		if (entries_[index]->name() == name)
 		{
 			fn.setFileName(fmt::format("{} ({})", entry->nameNoExt(), ++number));
 			name  = fn.fileName();
