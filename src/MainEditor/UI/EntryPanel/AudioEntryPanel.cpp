@@ -69,11 +69,6 @@ CVAR(Bool, snd_autoplay, false, CVar::Flag::Save)
 AudioEntryPanel::AudioEntryPanel(wxWindow* parent) :
 	EntryPanel(parent, "audio"),
 	timer_seek_{ new wxTimer(this) },
-#if (SFML_VERSION_MAJOR > 2)
-	sound_{ new sf::Sound(*sound_buffer_) },
-#else
-	sound_{ new sf::Sound() },
-#endif
 	music_{ new audio::Music() },
 	mod_{ new audio::ModMusic() },
 	mp3_{ new audio::Mp3Music() }
@@ -135,7 +130,6 @@ AudioEntryPanel::AudioEntryPanel(wxWindow* parent) :
 	sizer_gb->Add(slider_volume_, wxGBPosition(1, 8), { 1, 1 }, wxALIGN_CENTER_VERTICAL);
 
 	// Set volume
-	sound_->setVolume(snd_volume);
 	music_->setVolume(snd_volume);
 	audio::midiPlayer().setVolume(snd_volume);
 	mod_->setVolume(snd_volume);
@@ -360,33 +354,9 @@ bool AudioEntryPanel::openAudio(MemChunk& audio, const wxString& filename)
 	resetStream();
 
 	// (Re)create sound buffer
-	sound_buffer_ = std::make_unique<sf::SoundBuffer>();
 	audio_type_   = Invalid;
 
-	// Load into buffer
-	if (sound_buffer_->loadFromMemory((const char*)audio.data(), audio.size()))
-	{
-		log::info(3, "opened as sound");
-		// Bind to sound
-		sound_->setBuffer(*sound_buffer_);
-		audio_type_ = Sound;
-
-		// Enable play controls
-#if (SFML_VERSION_MAJOR == 2 && SFML_VERSION_MINOR < 2)
-		// SFML before 2.2 has a bug where it reports an incorrect value for long sounds, so compute it ourselves then
-		setAudioDuration(
-			(sound_buffer->getSampleCount() / sound_buffer->getSampleRate())
-			* (1000 / sound_buffer->getChannelCount()));
-#else
-		setAudioDuration(sound_buffer_->getDuration().asMilliseconds());
-#endif
-		btn_play_->Enable();
-		btn_pause_->Enable();
-		btn_stop_->Enable();
-
-		return true;
-	}
-	else if (music_->openFromMemory((const char*)audio.data(), audio.size()))
+	if (music_->openFromMemory((const char*)audio.data(), audio.size()))
 	{
 		log::info(3, "opened as music");
 		// Couldn't open the audio as a sf::SoundBuffer, try sf::Music instead
