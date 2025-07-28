@@ -1,4 +1,4 @@
-################################################################################
+﻿################################################################################
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
@@ -24,6 +24,7 @@
 /dist/res/.vscode/*
 /docs/build/
 /ipch
+/src/build/
 /src/bzip2/Release
 /src/lzma/Release
 /src/zlib/Release
@@ -43,3 +44,4 @@
 !/dist/makebuild.ps1
 
 CMakeSettings.json
+CMakeUserPresets.json

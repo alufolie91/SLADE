@@ -106,6 +106,8 @@
 #include <wx/msw/registry.h>
 #endif
 
+#define wxNO_UNSAFE_WXSTRING_CONV 1
+
 // other libraries
 #ifndef NO_FLUIDSYNTH
 #include <fluidsynth.h>
@@ -113,15 +115,6 @@
 
 // SFML
 #include <SFML/System.hpp>
-
-// Freeimage
-#define FREEIMAGE_LIB
-#include <FreeImage.h>
-
-// Undefine _WINDOWS_ that has been defined by FreeImage
-#ifndef _WIN32
-#undef _WINDOWS_
-#endif
 
 // fmt
 #include <fmt/format.h>

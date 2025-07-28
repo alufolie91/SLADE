@@ -83,6 +83,7 @@ public:
 	bool      putRGBAData(MemChunk& mc, Palette* pal = nullptr) const;
 	bool      putRGBData(MemChunk& mc, Palette* pal = nullptr) const;
 	bool      putIndexedData(MemChunk& mc) const;
+	bool      putAlphaData(MemChunk& mc) const;
 	int       width() const { return width_; }
 	int       height() const { return height_; }
 	int       index() const { return imgindex_; }
@@ -99,6 +100,7 @@ public:
 
 	void setXOffset(int offset);
 	void setYOffset(int offset);
+	void setOffsets(const Vec2i& offsets);
 	void setPalette(Palette* pal)
 	{
 		palette_.copyPalette(pal);

@@ -36,6 +36,8 @@
 #include "ArchiveEntry.h"
 #include "Archive.h"
 #include "General/Misc.h"
+#include "UI/WxUtils.h"
+#include "Utility/FileUtils.h"
 #include "Utility/StringUtils.h"
 
 using namespace slade;
@@ -306,7 +308,7 @@ void ArchiveEntry::unlock()
 void ArchiveEntry::formatName(const ArchiveFormat& format)
 {
 	// Perform character substitution if needed
-	name_ = misc::fileNameToLumpName(name_);
+	name_ = misc::fileNameToLumpName(name_, true);
 
 	// Max length
 	if (format.max_name_length > 0 && static_cast<int>(name_.size()) > format.max_name_length)
@@ -468,7 +470,7 @@ bool ArchiveEntry::importFile(string_view filename, uint32_t offset, uint32_t si
 	}
 
 	// Open the file
-	wxFile file({ filename.data(), filename.size() });
+	wxFile file(wxutil::strFromView(filename));
 
 	// Check that it opened ok
 	if (!file.IsOpened())
@@ -568,7 +570,7 @@ bool ArchiveEntry::importEntry(ArchiveEntry* entry)
 bool ArchiveEntry::exportFile(string_view filename)
 {
 	// Attempt to open file
-	wxFile file({ filename.data(), filename.size() }, wxFile::write);
+	wxFile file(wxutil::strFromView(filename), wxFile::write);
 
 	// Check it opened ok
 	if (!file.IsOpened())

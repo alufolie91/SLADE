@@ -36,6 +36,7 @@
 #include "Archive/ArchiveEntry.h"
 #include "Graphics/SImage/SIFormat.h"
 #include "Graphics/SImage/SImage.h"
+#include "Utility/FileUtils.h"
 #include "Utility/StringUtils.h"
 #include "Utility/Tokenizer.h"
 
@@ -140,7 +141,7 @@ bool misc::loadImageFromEntry(SImage* image, ArchiveEntry* entry, int index)
 	if (format == "img_raw" && SIFormat::rawFormat()->isThisFormat(entry->data()))
 		return SIFormat::rawFormat()->loadImage(*image, entry->data());
 
-	// Lastly, try detecting/loading via FreeImage
+	// Lastly, try detecting/loading via wxWidgets
 	else if (SIFormat::generalFormat()->isThisFormat(entry->data()))
 		return SIFormat::generalFormat()->loadImage(*image, entry->data());
 
@@ -325,7 +326,7 @@ string misc::lumpNameToFileName(string_view lump)
 			if ((chr < 'a' || chr > 'z') && (chr < 'A' || chr > 'Z') && (chr < '0' || chr > '9') && chr != '-'
 				&& chr != '.' && chr != '_' && chr != '~')
 			{
-				file += wxString::Format("%%%02X", chr);
+				file += fmt::format("%{:02X}", static_cast<unsigned char>(chr));
 			}
 			else
 				file += fmt::format("{}", chr);
@@ -344,7 +345,7 @@ string misc::lumpNameToFileName(string_view lump)
 // -----------------------------------------------------------------------------
 // Turns a file name into a lump name
 // -----------------------------------------------------------------------------
-string misc::fileNameToLumpName(string_view file)
+string misc::fileNameToLumpName(string_view file, bool percent_encoding_only)
 {
 	if (percent_encoding)
 	{
@@ -366,6 +367,9 @@ string misc::fileNameToLumpName(string_view file)
 
 		return lump;
 	}
+
+	if (percent_encoding_only)
+		return string{ file };
 
 	// ZDoom
 	string lump{ file };
@@ -613,8 +617,8 @@ void misc::readWindowInfo(Tokenizer& tz)
 // -----------------------------------------------------------------------------
 // Writes all saved window info to [file]
 // -----------------------------------------------------------------------------
-void misc::writeWindowInfo(wxFile& file)
+void misc::writeWindowInfo(SFile& file)
 {
 	for (auto& a : window_info)
-		file.Write(wxString::Format("\t%s %d %d %d %d\n", a.id, a.width, a.height, a.left, a.top));
+		file.writeStr(fmt::format("\t{} {} {} {} {}\n", a.id, a.width, a.height, a.left, a.top));
 }

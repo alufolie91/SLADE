@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15) # Minimum CMake 3.15 for precompiled header support
+﻿cmake_minimum_required(VERSION 3.15) # Minimum CMake 3.15 for precompiled header support
 project(SLADE VERSION 3.2.0)
 
 # Additional cmake modules
@@ -7,7 +7,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 # Release build by default
 if (NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE "Release")
-endif()
+endif ()
 
 # Build options
 OPTION(NO_WEBVIEW "Disable wxWebview usage (for start page and documentation)" OFF)
@@ -20,24 +20,22 @@ OPTION(BUILD_WX "Download and build wxWidgets instead of using system-installed 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
-if(BUILD_WX)
+if (BUILD_WX)
 	set(wxWidgets_USE_STATIC 1)
 	set(wxBUILD_SHARED OFF)
 	set(wxBUILD_USE_STATIC_RUNTIME ON)
+	set(wxUSE_LIBJPEG sys)
 	set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
 	include(FetchContent)
 	FetchContent_Declare(
-	   wxWidgets
-	   GIT_REPOSITORY https://github.com/wxWidgets/wxWidgets.git
-	   GIT_TAG 181f7a1d5533a3b135de1fd8f0467ba15a8a9f69 # master (3.3.0) as of 2024-11-26
+		wxWidgets
+		GIT_REPOSITORY https://github.com/wxWidgets/wxWidgets.git
+		GIT_TAG v3.3.0
 	)
 	FetchContent_GetProperties(wxwidgets)
-	if(NOT wxwidgets_POPULATED)
-	   FetchContent_Populate(wxwidgets)
-	   add_subdirectory(${wxwidgets_SOURCE_DIR} ${wxwidgets_BUILD_DIR})
-	endif()
-endif()
+	FetchContent_MakeAvailable(wxwidgets)
+endif ()
 
 add_subdirectory(src)
 

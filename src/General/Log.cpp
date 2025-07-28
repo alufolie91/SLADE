@@ -69,28 +69,7 @@ template<> struct fmt::formatter<log::MessageType> : formatter<string_view>
 		}
 		return formatter<string_view>::format(prefix, ctx);
 	}
-}; // namespace fmt
-
-
-// -----------------------------------------------------------------------------
-//
-// FreeImage Error Handler
-//
-// -----------------------------------------------------------------------------
-
-
-// -----------------------------------------------------------------------------
-// Allows us to catch FreeImage errors and log them
-// -----------------------------------------------------------------------------
-void FreeImageErrorHandler(FREE_IMAGE_FORMAT fif, const char* message)
-{
-	string error = "FreeImage: ";
-	if (fif != FIF_UNKNOWN)
-		error += fmt::format("[{}] ", FreeImage_GetFormatFromFIF(fif));
-	error += message;
-
-	log::error(error);
-}
+};
 
 
 // -----------------------------------------------------------------------------
@@ -137,21 +116,19 @@ void log::init()
 		info(fmt::format("{} Windows Build", app::isWin64Build() ? "64bit" : "32bit"));
 	info(fmt::format("Written by Simon Judd, 2008-{:%Y}", *tm));
 #ifdef SFML_VERSION_MAJOR
-	info(fmt::format(
-		"Compiled with wxWidgets {}.{}.{} and SFML {}.{}.{}",
-		wxMAJOR_VERSION,
-		wxMINOR_VERSION,
-		wxRELEASE_NUMBER,
-		SFML_VERSION_MAJOR,
-		SFML_VERSION_MINOR,
-		SFML_VERSION_PATCH));
+	info(
+		fmt::format(
+			"Compiled with wxWidgets {}.{}.{} and SFML {}.{}.{}",
+			wxMAJOR_VERSION,
+			wxMINOR_VERSION,
+			wxRELEASE_NUMBER,
+			SFML_VERSION_MAJOR,
+			SFML_VERSION_MINOR,
+			SFML_VERSION_PATCH));
 #else
 	info(fmt::format("Compiled with wxWidgets {}.{}.{}", wxMAJOR_VERSION, wxMINOR_VERSION, wxRELEASE_NUMBER));
 #endif
 	info("--------------------------------");
-
-	// Set up FreeImage to use our log:
-	FreeImage_SetOutputMessage(FreeImageErrorHandler);
 }
 
 // -----------------------------------------------------------------------------
@@ -221,19 +198,19 @@ vector<log::Message*> log::since(time_t time, MessageType type)
 // -----------------------------------------------------------------------------
 // Logs a debug message [text] at verbosity [level] only if debug mode is on
 // -----------------------------------------------------------------------------
-void log::debug(int level, const wxString& text)
+void log::debug(int level, string_view text)
 {
 	if (global::debug)
-		message(MessageType::Debug, level, text.ToStdString());
+		message(MessageType::Debug, level, text);
 }
 
 // -----------------------------------------------------------------------------
 // Logs a debug message [text] only if debug mode is on
 // -----------------------------------------------------------------------------
-void log::debug(const wxString& text)
+void log::debug(string_view text)
 {
 	if (global::debug)
-		message(MessageType::Debug, text.ToStdString());
+		message(MessageType::Debug, text);
 }
 
 void log::debug(int level, string_view text, fmt::format_args args)

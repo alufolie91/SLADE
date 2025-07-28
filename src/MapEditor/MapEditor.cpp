@@ -280,6 +280,9 @@ void mapeditor::openContextMenu()
 	// Set 3d camera
 	SAction::fromId("mapw_camera_set")->addToMenu(&menu_context, true);
 
+	// 3d mode at mouse cursor
+	SAction::fromId("mapw_mode_3d_at_mouse")->addToMenu(&menu_context, true);
+
 	// Run from here
 	SAction::fromId("mapw_run_map_here")->addToMenu(&menu_context, true);
 
@@ -387,7 +390,7 @@ string mapeditor::browseTexture(string_view init_texture, TextureType tex_type, 
 		edit_context->lockMouse(false);
 
 	// Setup texture browser
-	MapTextureBrowser browser(map_window, tex_type, wxString{ init_texture.data(), init_texture.size() }, &map);
+	MapTextureBrowser browser(map_window, tex_type, init_texture, &map);
 	browser.SetTitle(wxutil::strFromView(title));
 
 	// Get selected texture
@@ -434,18 +437,18 @@ int mapeditor::browseThingType(int init_type, SLADEMap& map)
 // -----------------------------------------------------------------------------
 bool mapeditor::editObjectProperties(vector<MapObject*>& list)
 {
-	wxString selsize = "";
-	wxString type    = edit_context->modeString(false);
+	string selsize;
+	string type = edit_context->modeString(false);
 	if (list.size() == 1)
-		type += wxString::Format(" #%d", list[0]->index());
+		type += fmt::format(" #{}", list[0]->index());
 	else if (list.size() > 1)
-		selsize = wxString::Format("(%lu selected)", list.size());
+		selsize = fmt::format("({} selected)", list.size());
 
 	// Create dialog for properties panel
 	SDialog dlg(
 		mapeditor::window(),
-		wxString::Format("%s Properties %s", type, selsize),
-		wxString::Format("mobjprops_%s", edit_context->modeString(false)),
+		fmt::format("{} Properties {}", type, selsize),
+		fmt::format("mobjprops_{}", edit_context->modeString(false)),
 		-1,
 		-1);
 	auto sizer = new wxBoxSizer(wxVERTICAL);

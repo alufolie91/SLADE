@@ -17,11 +17,11 @@ public:
 	void init() override;
 	void applyPreferences() override;
 
-	wxString pageTitle() override { return "DECOHack Compiler Settings"; }
+	string pageTitle() override { return "DECOHack Compiler Settings"; }
 
 private:
 	FileLocationPanel* flp_decohack_path_     = nullptr;
-	FileLocationPanel* flp_java_path_   	  = nullptr;
+	FileLocationPanel* flp_java_path_         = nullptr;
 	wxCheckBox*        cb_always_show_output_ = nullptr;
 
 	void setupLayout();

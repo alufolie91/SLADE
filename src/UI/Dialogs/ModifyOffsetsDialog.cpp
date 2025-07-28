@@ -51,24 +51,24 @@ using namespace slade;
 // ModifyOffsetsDialog class constructor
 // -----------------------------------------------------------------------------
 ModifyOffsetsDialog::ModifyOffsetsDialog() :
-	wxDialog(nullptr, -1, "Modify Gfx Offset(s)", wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE)
+	wxDialog(nullptr, -1, wxS("Modify Gfx Offset(s)"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE)
 {
 	int      width      = ui::scalePx(40);
 	wxString offtypes[] = {
-		"Monster",           "Monster (GL-friendly)", "Projectile",         "Hud/Weapon",
-		"Hud/Weapon (Doom)", "Hud/Weapon (Heretic)",  "Hud/Weapon (Hexen)",
+		wxS("Monster"),           wxS("Monster (GL-friendly)"), wxS("Projectile"),         wxS("Hud/Weapon"),
+		wxS("Hud/Weapon (Doom)"), wxS("Hud/Weapon (Heretic)"),  wxS("Hud/Weapon (Hexen)"),
 	};
 
 	// Set dialog icon
 	wxutil::setWindowIcon(this, "offset");
 
 	// Create controls
-	opt_auto_        = new wxRadioButton(this, -1, "Automatic Offsets", wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
+	opt_auto_ = new wxRadioButton(this, -1, wxS("Automatic Offsets"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
 	combo_aligntype_ = new wxChoice(this, -1, wxDefaultPosition, wxDefaultSize, 7, offtypes);
-	opt_set_         = new wxRadioButton(this, -1, "Set Offsets");
-	entry_xoff_      = new wxTextCtrl(this, wxID_ANY, "", wxDefaultPosition, wxSize(width, -1));
-	entry_yoff_      = new wxTextCtrl(this, wxID_ANY, "", wxDefaultPosition, wxSize(width, -1));
-	cbox_relative_   = new wxCheckBox(this, wxID_ANY, "Relative");
+	opt_set_         = new wxRadioButton(this, -1, wxS("Set Offsets"));
+	entry_xoff_      = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, -1));
+	entry_yoff_      = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, -1));
+	cbox_relative_   = new wxCheckBox(this, wxID_ANY, wxS("Relative"));
 
 	// Setup controls
 	combo_aligntype_->Select(0);
@@ -262,19 +262,14 @@ Vec2i ModifyOffsetsDialog::calculateOffsets(int xoff, int yoff, int width, int h
 // -----------------------------------------------------------------------------
 bool ModifyOffsetsDialog::apply(ArchiveEntry& entry) const
 {
-	auto* type = entry.type();
-	if (type == nullptr)
-		return false;
-
 	// Check entry type
-	wxString entryformat = type->formatId();
-	if (!(entryformat == "img_doom" || entryformat == "img_doom_arah" || entryformat == "img_doom_alpha"
-		  || entryformat == "img_doom_beta" || entryformat == "img_png"))
+	if (!gfx::supportsOffsets(entry))
 	{
-		log::error(wxString::Format(
-			"Entry \"%s\" is of type \"%s\" which does not support offsets", entry.name(), type->name()));
+		log::error("Entry \"{}\" is of type \"{}\" which does not support offsets", entry.name(), entry.type()->name());
 		return false;
 	}
+
+	const auto& entryformat = entry.type()->formatId();
 
 	// Doom gfx format, normal and beta version.
 	// Also arah format from alpha 0.2 because it uses the same header format.

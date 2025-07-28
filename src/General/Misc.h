@@ -32,7 +32,7 @@ namespace misc
 
 	string   sizeAsString(uint32_t size);
 	string   lumpNameToFileName(string_view lump);
-	string   fileNameToLumpName(string_view file);
+	string   fileNameToLumpName(string_view file, bool percent_encoding_only = false);
 	uint32_t crc(const uint8_t* buf, uint32_t len);
 	Vec2i    findJaguarTextureDimensions(ArchiveEntry* entry, string_view name);
 
@@ -52,6 +52,6 @@ namespace misc
 	WindowInfo getWindowInfo(string_view id);
 	void       setWindowInfo(string_view id, int width, int height, int left, int top);
 	void       readWindowInfo(Tokenizer& tz);
-	void       writeWindowInfo(wxFile& file);
+	void       writeWindowInfo(SFile& file);
 } // namespace misc
 } // namespace slade

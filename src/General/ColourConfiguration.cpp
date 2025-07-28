@@ -34,6 +34,7 @@
 #include "App.h"
 #include "Archive/ArchiveManager.h"
 #include "Console.h"
+#include "Utility/FileUtils.h"
 #include "Utility/Parser.h"
 #include "Utility/StringUtils.h"
 
@@ -295,10 +296,11 @@ bool colourconfig::init()
 	loadDefaults();
 
 	// Check for saved colour configuration
-	if (wxFileExists(app::path("colours.cfg", app::Dir::User)))
+	const auto cfg_path = app::path("colours.cfg", app::Dir::User);
+	if (fileutil::fileExists(cfg_path))
 	{
 		MemChunk ccfg;
-		ccfg.importFile(app::path("colours.cfg", app::Dir::User));
+		ccfg.importFile(cfg_path);
 		readConfiguration(ccfg);
 	}
 
@@ -407,8 +409,14 @@ CONSOLE_COMMAND(ccfg, 1, false)
 
 		// Print colour
 		auto def = colourconfig::colDef(args[0]);
-		log::console(fmt::format(
-			"Colour \"{}\" = {} {} {} {} {}", args[0], def.colour.r, def.colour.g, def.colour.b, def.blend_additive));
+		log::console(
+			fmt::format(
+				"Colour \"{}\" = {} {} {} {} {}",
+				args[0],
+				def.colour.r,
+				def.colour.g,
+				def.colour.b,
+				def.blend_additive));
 	}
 }
 

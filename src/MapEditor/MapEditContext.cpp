@@ -286,6 +286,18 @@ void MapEditContext::lockMouse(bool lock)
 }
 
 // -----------------------------------------------------------------------------
+// Moves the 3d mode camera to the current mouse cursor position on the map
+// -----------------------------------------------------------------------------
+void MapEditContext::move3dCameraToCursor()
+{
+	Vec3d pos    = input().mousePosMap();
+	auto  sector = map_.sectors().atPos(input_.mousePosMap());
+	if (sector)
+		pos.z = sector->floor().plane.heightAt(pos.x, pos.y) + 40;
+	renderer_.renderer3D().cameraSetPosition(pos);
+}
+
+// -----------------------------------------------------------------------------
 // Updates the current map editor state (hilight, animations, etc.)
 // -----------------------------------------------------------------------------
 bool MapEditContext::update(long frametime)
@@ -1886,11 +1898,15 @@ bool MapEditContext::handleAction(string_view id)
 	// Move 3d mode camera
 	else if (id == "mapw_camera_set")
 	{
-		Vec3d pos    = input().mousePosMap();
-		auto  sector = map_.sectors().atPos(input_.mousePosMap());
-		if (sector)
-			pos.z = sector->floor().plane.heightAt(pos.x, pos.y) + 40;
-		renderer_.renderer3D().cameraSetPosition(pos);
+		move3dCameraToCursor();
+		return true;
+	}
+
+	// Enter 3d mode at mouse
+	else if (id == "mapw_mode_3d_at_mouse")
+	{
+		move3dCameraToCursor();
+		setEditMode(Mode::Visual);
 		return true;
 	}
 
@@ -1949,10 +1965,11 @@ bool MapEditContext::handleAction(string_view id)
 			// Setup help text
 			auto key_accept = KeyBind::bind("map_edit_accept").keysAsString();
 			auto key_cancel = KeyBind::bind("map_edit_cancel").keysAsString();
-			setFeatureHelp({ "Tag Edit",
-							 fmt::format("{} = Accept", key_accept),
-							 fmt::format("{} = Cancel", key_cancel),
-							 "Left Click = Toggle tagged sector" });
+			setFeatureHelp(
+				{ "Tag Edit",
+				  fmt::format("{} = Accept", key_accept),
+				  fmt::format("{} = Cancel", key_cancel),
+				  "Left Click = Toggle tagged sector" });
 		}
 
 		return true;
@@ -2419,10 +2436,11 @@ CONSOLE_COMMAND(m_check, 0, true)
 
 		log::console("Available map checks:");
 		for (auto a = 0; a < MapCheck::NumStandardChecks; ++a)
-			log::console(fmt::format(
-				"{}: Check for {}",
-				MapCheck::standardCheckId(static_cast<MapCheck::StandardCheck>(a)),
-				MapCheck::standardCheckDesc(static_cast<MapCheck::StandardCheck>(a))));
+			log::console(
+				fmt::format(
+					"{}: Check for {}",
+					MapCheck::standardCheckId(static_cast<MapCheck::StandardCheck>(a)),
+					MapCheck::standardCheckDesc(static_cast<MapCheck::StandardCheck>(a))));
 
 		log::console("all: Run all checks");
 

@@ -70,13 +70,8 @@ DECOHackPrefsPanel::DECOHackPrefsPanel(wxWindow* parent) : PrefsPanelBase(parent
 		filedialog::executableExtensionString(),
 		filedialog::executableFileName("java"));
 	flp_decohack_path_ = new FileLocationPanel(
-		this,
-		path_decohack,
-		true,
-		"Browse For DoomTools Jar",
-		"Jar Files|*.jar",
-		"doomtools.jar");
-	cb_always_show_output_ = new wxCheckBox(this, -1, "Always Show Compiler Output");
+		this, path_decohack, true, "Browse For DoomTools Jar", "Jar Files|*.jar", "doomtools.jar");
+	cb_always_show_output_ = new wxCheckBox(this, -1, wxS("Always Show Compiler Output"));
 
 	setupLayout();
 }
@@ -96,8 +91,8 @@ void DECOHackPrefsPanel::init()
 // -----------------------------------------------------------------------------
 void DECOHackPrefsPanel::applyPreferences()
 {
-	path_decohack = wxutil::strToView(flp_decohack_path_->location());
-	path_java = wxutil::strToView(flp_java_path_->location());
+	path_decohack = flp_decohack_path_->location();
+	path_java     = flp_java_path_->location();
 
 	decohack_always_show_output = cb_always_show_output_->GetValue();
 }
@@ -113,11 +108,17 @@ void DECOHackPrefsPanel::setupLayout()
 
 	// java path
 	sizer->Add(
-		wxutil::createLabelVBox(this, "Location of Java executable:", flp_java_path_), 0, wxEXPAND | wxBOTTOM, ui::pad());
+		wxutil::createLabelVBox(this, "Location of Java executable:", flp_java_path_),
+		0,
+		wxEXPAND | wxBOTTOM,
+		ui::pad());
 
 	// doomtools.jar path
 	sizer->Add(
-		wxutil::createLabelVBox(this, "Location of DoomTools jar:", flp_decohack_path_), 0, wxEXPAND | wxBOTTOM, ui::pad());
+		wxutil::createLabelVBox(this, "Location of DoomTools jar:", flp_decohack_path_),
+		0,
+		wxEXPAND | wxBOTTOM,
+		ui::pad());
 
 	// 'Always Show Output' checkbox
 	sizer->Add(cb_always_show_output_, 0, wxEXPAND);

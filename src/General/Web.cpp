@@ -54,11 +54,11 @@ string web::getHttp(const string& host, const string& uri)
 	// Setup connection & request
 	sf::Http          http(host);
 	sf::Http::Request request;
-	#if (SFML_VERSION_MAJOR > 2)
+#if (SFML_VERSION_MAJOR > 2)
 	request.setMethod(sf::Http::Request::Method::Get);
-	#else
+#else
 	request.setMethod(sf::Http::Request::Get);
-	#endif
+#endif
 	request.setUri(uri);
 
 	// Send HTTP request
@@ -66,11 +66,11 @@ string web::getHttp(const string& host, const string& uri)
 
 	switch (response.getStatus())
 	{
-	#if (SFML_VERSION_MAJOR > 2)
+#if (SFML_VERSION_MAJOR > 2)
 	case sf::Http::Response::Status::Ok: return response.getBody();
-	#else
+#else
 	case sf::Http::Response::Ok: return response.getBody();
-	#endif
+#endif
 	default: return "connect_failed";
 	}
 }
@@ -86,7 +86,7 @@ void web::getHttpAsync(const string& host, const string& uri, wxEvtHandler* even
 		{
 			// Queue wx event with http request response
 			auto event = new wxThreadEvent(wxEVT_THREAD_WEBGET_COMPLETED);
-			event->SetString(getHttp(host, uri));
+			event->SetString(wxString::FromUTF8(getHttp(host, uri)));
 			wxQueueEvent(event_handler, event);
 		});
 
