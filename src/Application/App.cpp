@@ -33,6 +33,7 @@
 #include "Main.h"
 #include "App.h"
 #include "Archive/ArchiveManager.h"
+#include "Audio/MIDIPlayer.h"
 #include "Game/Configuration.h"
 #include "General/Clipboard.h"
 #include "General/ColourConfiguration.h"
@@ -61,7 +62,6 @@
 #include "Utility/StringUtils.h"
 #include "Utility/Tokenizer.h"
 #include <dumb.h>
-#include <filesystem>
 #ifdef __WXOSX__
 #include <ApplicationServices/ApplicationServices.h>
 #endif
@@ -84,7 +84,7 @@ std::thread::id main_thread_id;
 bool            win_darkmode_enabled = false;
 
 // Version
-Version version_num{ 3, 2, 8, 0 };
+Version version_num{ 3, 2, 9, 0 };
 
 // Directory paths
 string dir_data;
@@ -673,8 +673,6 @@ void app::saveConfigFile()
 // -----------------------------------------------------------------------------
 void app::exit(bool save_config)
 {
-	namespace fs = std::filesystem;
-
 	exiting = true;
 
 	if (save_config)
@@ -711,16 +709,14 @@ void app::exit(bool save_config)
 	// Clean up
 	drawing::cleanupFonts();
 	gl::Texture::clearAll();
+	audio::resetMIDIPlayer();
 
 	// Clear temp folder
-	std::error_code error;
-	for (auto& item : fs::directory_iterator{ fs::u8path(app::path("", app::Dir::Temp)) })
+	auto temp_files = fileutil::allFilesInDir(path("", Dir::Temp), true, true);
+	for (const auto& file : temp_files)
 	{
-		if (!item.is_regular_file())
-			continue;
-
-		if (!fs::remove(item, error))
-			log::warning("Could not clean up temporary file \"{}\": {}", item.path().string(), error.message());
+		if (!fileutil::removeFile(file))
+			log::warning("Could not clean up temporary file \"{}\"", file);
 	}
 
 #ifndef NO_LUA
